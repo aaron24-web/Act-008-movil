@@ -34,16 +34,21 @@ class _CardsViewState extends State<CardsView> {
                 return const Center(child: Text('No se encontraron cartas'));
               }
               // El ListView.builder irá aquí
-              return ListView.builder(
-                controller: _scrollController,
-                itemCount: state.hasReachedMax
-                    ? state.cards.length
-                    : state.cards.length + 1,
-                itemBuilder: (BuildContext context, int index) {
-                  return index >= state.cards.length
-                      ? const BottomLoader()
-                      : CardListItem(card: state.cards[index]);
+              return RefreshIndicator(
+                onRefresh: () async {
+                  context.read<PokemonCardBloc>().add(CardsRefreshed());
                 },
+                child: ListView.builder(
+                  controller: _scrollController,
+                  itemCount: state.hasReachedMax
+                      ? state.cards.length
+                      : state.cards.length + 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    return index >= state.cards.length
+                        ? const BottomLoader()
+                        : CardListItem(card: state.cards[index]);
+                  },
+                ),
               );
             case PokemonCardStatus.initial:
               return const Center(child: CircularProgressIndicator());

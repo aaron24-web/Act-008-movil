@@ -15,7 +15,7 @@ class PokemonCardRepositoryImpl implements PokemonCardRepository {
     int pageSize = 20,
   }) async {
     try {
-      final response = await _dio.get(
+      final response = await _dio.get<Map<String, dynamic>>(
         '$_baseUrl/cards',
         queryParameters: {
           'page': page,
@@ -24,21 +24,19 @@ class PokemonCardRepositoryImpl implements PokemonCardRepository {
         },
       );
 
-      if (response.statusCode == 200 && response.data != null) {
-        final results = response.data['data'] as List;
-        final cards = results
+      if (response.statusCode == 200) {
+        final data = response.data!['data'] as List<dynamic>;
+        return data
             .map(
-              (cardData) => PokemonCardModel.fromJson(
-                cardData as Map<String, dynamic>,
+              (dynamic json) => PokemonCardModel.fromJson(
+                json as Map<String, dynamic>,
               ).toEntity(),
             )
             .toList();
-        return cards;
       } else {
         throw Exception('Failed to load Pokémon cards');
       }
     } on DioException catch (e) {
-      // Manejar errores específicos de Dio (ej. problemas de red)
       throw Exception('Failed to load Pokémon cards: ${e.message}');
     }
   }

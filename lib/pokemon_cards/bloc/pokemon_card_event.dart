@@ -8,3 +8,6 @@ sealed class PokemonCardEvent extends Equatable {
 }
 
 final class CardsFetched extends PokemonCardEvent {}
+
+final class CardsRefreshed extends PokemonCardEvent {}
+
